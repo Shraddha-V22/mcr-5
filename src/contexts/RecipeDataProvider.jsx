@@ -19,10 +19,10 @@ export default function RecipeDataProvider({ children }) {
   const { data, searchText } = recipesData;
 
   const filteredData = useMemo(() => {
-    // const dataFromLS = JSON.parse(localStorage.getItem("recipes"));
+    const dataFromLS = JSON.parse(localStorage.getItem("recipes"));
     if (recipesData.searchText) {
       if (recipesData.searchBy === "ingredients") {
-        return recipesData.data.filter(({ ingredients }) =>
+        return dataFromLS.filter(({ ingredients }) =>
           ingredients
             .join(",")
             .toLowerCase()
@@ -32,20 +32,20 @@ export default function RecipeDataProvider({ children }) {
         recipesData.searchBy === "recipe_name" ||
         recipesData.searchBy === "cuisine"
       ) {
-        return recipesData.data.filter((recipe) =>
+        return dataFromLS.filter((recipe) =>
           recipe[recipesData.searchBy]
             .toLowerCase()
             .includes(recipesData.searchText.toLowerCase())
         );
       } else {
-        recipesData.data.filter((recipe) =>
+        dataFromLS.filter((recipe) =>
           recipe["recipe_name"]
             .toLowerCase()
             .includes(recipesData.searchText.toLowerCase())
         );
       }
     } else {
-      return recipesData.data;
+      return dataFromLS;
     }
   }, [data, searchText]);
 
