@@ -38,18 +38,10 @@ export default function RecipeDataProvider({ children }) {
             .includes(recipesData.searchText.toLowerCase())
         );
       } else {
-        recipesData.data.filter(
-          (recipe) =>
-            recipe.recipe_name
-              .toLowerCase()
-              .includes(recipesData.searchText.toLowerCase()) ||
-            recipe.ingredients
-              .join(",")
-              .toLowerCase()
-              .includes(recipesData.searchText.toLowerCase()) ||
-            recipe.cuisine
-              .toLowerCase()
-              .includes(recipesData.searchText.toLowerCase())
+        recipesData.data.filter((recipe) =>
+          recipe["recipe_name"]
+            .toLowerCase()
+            .includes(recipesData.searchText.toLowerCase())
         );
       }
     } else {
@@ -57,9 +49,9 @@ export default function RecipeDataProvider({ children }) {
     }
   }, [data, searchText]);
 
-  useEffect(() => {
-    localStorage.setItem("recipes", JSON.stringify(recipesData.data));
-  }, [data]);
+  // useEffect(() => {
+  //   localStorage.setItem("recipes", JSON.stringify(recipesData.data));
+  // }, []);
 
   return (
     <RecipeDataContext.Provider value={{ recipesData, filteredData, dispatch }}>

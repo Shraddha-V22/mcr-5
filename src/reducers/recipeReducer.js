@@ -13,9 +13,10 @@ export const recipeReducer = (state, { type, payload }) => {
         data: [...state.data, { id: uuid(), ...payload }],
       };
     case RECIPE.DELETE:
-      // JSON.parse(localStorage.getItem("recipes")).filter(
-      //   ({ id }) => id !== payload
-      // );
+      localStorage.setItem(
+        "recipes",
+        JSON.stringify(state.data.filter(({ id }) => id !== payload))
+      );
       return {
         ...state,
         data: state.data.filter(({ id }) => id !== payload),
