@@ -1,0 +1,71 @@
+import { createContext } from "react";
+import { recipes } from "../data/recipes";
+import { recipeReducer } from "../reducers/recipeReducer";
+import { useContext } from "react";
+import { useReducer } from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
+
+const RecipeDataContext = createContext();
+
+const initialRecipes = {
+  data: [...recipes],
+  searchText: "",
+  searchBy: "",
+};
+
+export default function RecipeDataProvider({ children }) {
+  const [recipesData, dispatch] = useReducer(recipeReducer, initialRecipes);
+  const { data, searchText, searchBy } = recipesData;
+
+  const filteredData = useMemo(() => {
+    if (recipesData.searchText) {
+      const dataFromLS = JSON.parse(localStorage.getItem("recipes"));
+      if (recipesData.searchBy === "ingredients") {
+        return dataFromLS.filter(({ ingredients }) =>
+          ingredients
+            .join(",")
+            .toLowerCase()
+            .includes(recipesData.searchText.toLowerCase())
+        );
+      } else if (
+        recipesData.searchBy === "recipe_name" ||
+        recipesData.searchBy === "cuisine"
+      ) {
+        return dataFromLS.filter((recipe) =>
+          recipe[recipesData.searchBy]
+            .toLowerCase()
+            .includes(recipesData.searchText.toLowerCase())
+        );
+      } else {
+        dataFromLS.filter(
+          (recipe) =>
+            recipe.recipe_name
+              .toLowerCase()
+              .includes(recipesData.searchText.toLowerCase()) ||
+            recipe.ingredients
+              .join(",")
+              .toLowerCase()
+              .includes(recipesData.searchText.toLowerCase()) ||
+            recipe.cuisine
+              .toLowerCase()
+              .includes(recipesData.searchText.toLowerCase())
+        );
+      }
+    } else {
+      return JSON.parse(localStorage.getItem("recipes"));
+    }
+  }, [data, searchText]);
+
+  useEffect(() => {
+    localStorage.setItem("recipes", JSON.stringify(recipesData.data));
+  }, [data]);
+
+  return (
+    <RecipeDataContext.Provider value={{ recipesData, filteredData, dispatch }}>
+      {children}
+    </RecipeDataContext.Provider>
+  );
+}
+
+export const useRecipes = () => useContext(RecipeDataContext);
