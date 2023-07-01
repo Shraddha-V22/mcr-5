@@ -16,13 +16,13 @@ const initialRecipes = {
 
 export default function RecipeDataProvider({ children }) {
   const [recipesData, dispatch] = useReducer(recipeReducer, initialRecipes);
-  const { data, searchText, searchBy } = recipesData;
+  const { data, searchText } = recipesData;
 
   const filteredData = useMemo(() => {
+    // const dataFromLS = JSON.parse(localStorage.getItem("recipes"));
     if (recipesData.searchText) {
-      const dataFromLS = JSON.parse(localStorage.getItem("recipes"));
       if (recipesData.searchBy === "ingredients") {
-        return dataFromLS.filter(({ ingredients }) =>
+        return recipesData.data.filter(({ ingredients }) =>
           ingredients
             .join(",")
             .toLowerCase()
@@ -32,13 +32,13 @@ export default function RecipeDataProvider({ children }) {
         recipesData.searchBy === "recipe_name" ||
         recipesData.searchBy === "cuisine"
       ) {
-        return dataFromLS.filter((recipe) =>
+        return recipesData.data.filter((recipe) =>
           recipe[recipesData.searchBy]
             .toLowerCase()
             .includes(recipesData.searchText.toLowerCase())
         );
       } else {
-        dataFromLS.filter(
+        recipesData.data.filter(
           (recipe) =>
             recipe.recipe_name
               .toLowerCase()
@@ -53,7 +53,7 @@ export default function RecipeDataProvider({ children }) {
         );
       }
     } else {
-      return JSON.parse(localStorage.getItem("recipes"));
+      return recipesData.data;
     }
   }, [data, searchText]);
 
